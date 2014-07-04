@@ -1,0 +1,10 @@
+{
+  "name": "pdf2image",
+  "version": "0.0.1",
+  "dependencies": {
+    "directory-stream": "^0.1.1",
+    "event-stream": "^3.1.5",
+    "download": "^0.1.18",
+    "request": "^2.36.0"
+  }
+}
