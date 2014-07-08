@@ -2,9 +2,14 @@
   "name": "pdf2image",
   "version": "0.0.1",
   "dependencies": {
-    "directory-stream": "^0.1.1",
     "event-stream": "^3.1.5",
     "download": "^0.1.18",
-    "request": "^2.36.0"
+    "request": "^2.36.0",
+    "express": "^4.5.1",
+    "body-parser": "^1.4.3",
+    "node-dir": "^0.1.5"
+  },
+  "devDependencies": {
+    "debug": "^1.0.2"
   }
 }

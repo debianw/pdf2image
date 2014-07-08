@@ -1,18 +1,41 @@
-var pdf2image = require('./lib/pdf2image')();
+var cp = require('child_process')
+  , express = require('express')
+  , bodyParser = require('body-parser')
+  , app = express()
+  , port = process.env.PORT || 7005
+  , options
+  , child;
 
-pdf2image.request({
-  url: 'https://www.verifyd.com/CLServicesDev/VendorApi.ashx?ActiveBid&orderId=532764',
-  convertSettings: ['-density', '150']
+/**
+ * Middlewares
+ */
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+/**
+ * Routes
+ */
+
+app.post('/pdf', function (req, res) {
+  if (!req.body.url) return res.send(400, 'get pdf file');
+
+  var options = {
+    url: req.body.url,
+    density: req.body.density
+  };
+
+  child = cp.fork('./lib/pdf2image/fork', [JSON.stringify(options)]);
+
+  child.on('message', function (pages) {
+    res.json(pages);
+  });
 });
 
-pdf2image.on('end', function () {
-  console.log('end convertion ...');
-});
+/**
+ * Listen
+ */
 
-pdf2image.on('err', function (err) {
-  console.log('pdf2image error: ', err);
-});
-
-pdf2image.on('page', function (page) {
-  console.log('Page => ', page);
+app.listen(port, function () {
+  console.log('pdf2image service listening on port %d', port);
 });
