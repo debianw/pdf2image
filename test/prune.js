@@ -2,6 +2,8 @@ var assert = require('assert')
   , Prune = require('../lib/Prune')
   , path = require('path')
   , fs = require('fs')
+  , del = require('del')
+  , moment = require('moment')
   , options;
 
 options = {
@@ -18,8 +20,11 @@ describe('Prune', function () {
   it('should create base directory', function (done) {
     var prune = new Prune(options);
 
-    prune.init();
-
+    del(options.basedir, function (err) {
+      if (err) return done(err);
+      prune.init();
+    });
+    
     prune.on('init done', function () {
       done();
     });
@@ -35,34 +40,50 @@ describe('Prune', function () {
    */
 
   it('should return old directories', function (done) {
-    var prune = new Prune(options);
+    var prune = new Prune(options)
+      , dir1 = path.join(options.basedir, moment().subtract('days', options.experationDays+1).format('YYYY-MM-DD'))
+      , dir2 = path.join(options.basedir, moment().subtract('days', options.experationDays+2).format('YYYY-MM-DD'));
 
-    fs.mkdirSync(path.join(options.basedir, '2014-01-01'));
-    fs.mkdirSync(path.join(options.basedir, '2014-02-02'));
+    // remove base directory
+    del(options.basedir, function (err) {
+      if (err) return done(err);
 
-    /*prune.getOldDirectories(function (err, directories) {
-      if (err) console.log('err: ', err);
+      fs.mkdirSync(options.basedir);
+      fs.mkdirSync(dir1);
+      fs.mkdirSync(dir2);
 
-      console.log(directories);
+      prune.getOldDirectories(options.basedir, function (err, directories) {
+        if (err) return done(err);
 
-      done();
-    });*/
-    done();
+        if (directories.indexOf(dir1) === -1 || directories.indexOf(dir2) === -1) return done('Error returning expired directories');
+
+        done();
+      });
+
+    });
   });
 
   /**
    *
    */
 
-  /*it('should prune old data', function (done) {
-    var prune = new Prune(options);
+  it('should prune old directories', function (done) {
+    var prune = new Prune(options)
+      , dir1 = path.join(options.basedir, moment().subtract('days', options.experationDays+1).format('YYYY-MM-DD'))
+      , dir2 = path.join(options.basedir, moment().subtract('days', options.experationDays+2).format('YYYY-MM-DD'));
 
-    
+    // remove base directory
+    del(options.basedir, function (err) {
+      if (err) return done(err);
 
-    prune.prune();
+      fs.mkdirSync(options.basedir);
+      fs.mkdirSync(dir1);
+      fs.mkdirSync(dir2);
 
-    prune.on('prune done', function (files) {
-      console.log('files: ', files);
+      prune.prune();
+    });
+
+    prune.on('prune done', function () {
       done();
     });
 
@@ -70,6 +91,6 @@ describe('Prune', function () {
       done(err);
     });
 
-  });*/
+  });
 
 });
