@@ -1,10 +1,22 @@
-var cp = require('child_process')
-  , express = require('express')
+var express = require('express')
   , bodyParser = require('body-parser')
+  , Prune = require('./lib/prune')
+  , pdf2imageApp = require('./lib/pdf2image/routes')
+  , path = require('path')
+  , debug = require('debug')('service')
   , app = express()
   , port = process.env.PORT || 7005
-  , options
-  , child;
+  , _p;
+
+/**
+ * Prunning configuration
+ */
+
+_p = Prune({
+  basedir: path.resolve('./cache'),
+  experationDays: 2
+})
+.init();
 
 /**
  * Middlewares
@@ -13,25 +25,13 @@ var cp = require('child_process')
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname));
-
-/**
- * Routes
- */
-
-app.post('/pdf', function (req, res) {
-  if (!req.body.url) return res.send(400, 'get pdf file');
-
-  var options = {
-    url: req.body.url,
-    density: req.body.density
-  };
-
-  child = cp.fork('./lib/pdf2image/fork', [JSON.stringify(options)]);
-
-  child.on('message', function (pages) {
-    res.json(pages);
+app.use(function (req, res, next) {
+  process.nextTick(function () {
+    _p.prune();
   });
+  next();
 });
+app.use(pdf2imageApp(_p));
 
 /**
  * Listen

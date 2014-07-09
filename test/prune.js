@@ -18,7 +18,7 @@ describe('Prune', function () {
    */
 
   it('should create base directory', function (done) {
-    var prune = new Prune(options);
+    var prune = Prune(options);
 
     del(options.basedir, function (err) {
       if (err) return done(err);
@@ -40,7 +40,7 @@ describe('Prune', function () {
    */
 
   it('should return old directories', function (done) {
-    var prune = new Prune(options)
+    var prune = Prune(options)
       , dir1 = path.join(options.basedir, moment().subtract('days', options.experationDays+1).format('YYYY-MM-DD'))
       , dir2 = path.join(options.basedir, moment().subtract('days', options.experationDays+2).format('YYYY-MM-DD'));
 
@@ -68,7 +68,7 @@ describe('Prune', function () {
    */
 
   it('should prune old directories', function (done) {
-    var prune = new Prune(options)
+    var prune = Prune(options)
       , dir1 = path.join(options.basedir, moment().subtract('days', options.experationDays+1).format('YYYY-MM-DD'))
       , dir2 = path.join(options.basedir, moment().subtract('days', options.experationDays+2).format('YYYY-MM-DD'));
 
