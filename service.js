@@ -9,14 +9,13 @@ var express = require('express')
   , _p;
 
 /**
- * Prunning configuration
+ * Pruning configuration
  */
 
 _p = Prune({
   basedir: path.resolve('./cache'),
   experationDays: 2
-})
-.init();
+});
 
 /**
  * Middlewares
@@ -27,10 +26,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname));
 app.use(function (req, res, next) {
   process.nextTick(function () {
-    _p.prune();
+    _p
+      .init()
+      .prune();
   });
+
   next();
 });
+
 app.use(pdf2imageApp(_p));
 
 /**
