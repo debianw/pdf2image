@@ -14,5 +14,8 @@
   "devDependencies": {
     "debug": "^1.0.2",
     "mocha": "^1.20.1"
+  },
+  "scripts": {
+    "test": "DEBUG=testing ./node_modules/mocha/bin/mocha -R spec --timeout 30000"
   }
 }

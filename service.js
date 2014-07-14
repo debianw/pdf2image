@@ -34,7 +34,7 @@ app.use(function (req, res, next) {
   next();
 });
 
-app.use(pdf2imageApp(_p));
+app.use(pdf2imageApp);
 
 /**
  * Listen
